@@ -19,11 +19,15 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: 5
+  pool: <%= ENV["DB_POOL"] || ENV['MAX_THREADS'] || 5 %>
 
 development:
   <<: *default
-  database: bike-rides_development
+  database: <%= ENV["DEV_DATABASE"] || 'bike-rides_development' %>
+  username: postgres
+  password: <%= ENV["DEV_DATABASE_PASSWORD"] %>
+  host: <%= ENV["DEV_DATABASE_HOST"] || '127.0.0.1' %>
+  port: <%= ENV["DEV_DATABASE_PORT"] || '5432' %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -57,7 +61,9 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: bike-rides_test
+  database: <%= ENV["TEST_DATABASE"] || 'bike-rides_test' %>
+  username: postgres
+  password: <%= ENV["TEST_DATABASE_PASSWORD"] %>
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -78,10 +84,12 @@ test:
 #   production:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+
+# as of rails version 4.1 this will be merged with heroku configs
 production:
   <<: *default
-  database: bike-rides_production
-  username: bike-rides
-  password: <%= ENV['BIKE-RIDES_DATABASE_PASSWORD'] %>
-
-
+  url:  <%= ENV["DATABASE_URL"] %>
